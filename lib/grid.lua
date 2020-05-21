@@ -1,3 +1,6 @@
+alt = false
+alt_lock = false
+
 gr = grid.connect()
 
 g = {
@@ -25,6 +28,20 @@ function grid_redraw()
 end
 
 function gr.key(x,y,z)
+  -- alt logic
+  if x==16 and y==1 then
+    if z==1 and alt==false then
+      alt = true
+      alt_lock = true
+    elseif z==1 and alt_lock==true then
+      alt = false
+    elseif z==0 and alt_lock==false then
+      alt = false
+    end
+    g.dirty = true
+  elseif z==1 then alt_lock = false end
+
+  -- nav and page
   if y==1 or y==2 then grid_key_nav(x,y,z)
   else g.key[state.page](x,y,z) end
 end
@@ -32,30 +49,59 @@ end
 
 -------- nav (global)
 
+local page_lookup = { track=1, cut=2, clip=3, param=4 }
+
 grid_redraw_nav = function()
-  gr:led(1,1,state.page == "setup" and 15 or 2)
-  gr:led(2,1,state.page == "cut" and 15 or 2)
+  if alt then gr:led(16,1,15) end
+
+  gr:led(8+page_lookup[state.page],1,15)
+
+  gr:led(12+state.window,2,15)
 end
 
 grid_key_nav = function(x,y,z)
-  if x==1 and y==1 and z==1 then
-    page("setup")
-  elseif x==2 and y==1 and z==1 then
-    page("cut")
+  if y==1 then
+    if x>8 and x<13 and z==1 then
+      set_page(pages[x-8])
+    end
+  elseif y==2 then
+    if x>12 and z==1 then
+      set_window(x-12)
+    end
   end
 end
 
 
 
--------- SETUP
+-------- TRACK
 
-g.redraw.setup = function()
-  gr:led(num3,3,15)
+g.redraw.track = function()
+  local w = (state.window-1)*6
+  for i=1,6 do 
+    -- group
+    for n=1,4 do gr:led(n,i+2,2) end
+    gr:led(track[i+w].group,i+2,10)
+    -- octave + rev
+    for n=6,14 do gr:led(n,i+2,2) end
+    gr:led(10,i+2,0)
+    gr:led(16,i+2,2)
+    gr:led(track[i+w].octave+10,i+2,10)
+    if track[i+w].rev == -1 then gr:led(16,i+2,10) end
+  end
 end
 
-g.key.setup = function(x,y,z)
+g.key.track = function(x,y,z)
+  local w = (state.window-1)*6
   if z==1 then
-    num3 = (num3+1)%16
+    if x<5 then
+      track[y-2+w].group = x
+    elseif x>5 and x<15 then
+      -- FIXME: UPDATE PARAM, but for now:
+      track[y-2+w].octave = x-10
+    elseif x==16 then
+      -- FIXME: update PARAM
+      track[y-2+w].rev = -track[y-2+w].rev
+    end
     g.dirty = true
   end
 end
@@ -65,3 +111,15 @@ end
 
 g.redraw.cut = function() end
 g.key.cut = function(x,y,z) end
+
+
+-------- CLIP
+
+g.redraw.clip = function() end
+g.key.clip = function(x,y,z) end
+
+
+-------- PARAM
+
+g.redraw.param = function() end
+g.key.param = function(x,y,z) end

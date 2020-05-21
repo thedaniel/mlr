@@ -1,15 +1,20 @@
 -- mlr
--- 2.0.0 @tehn
+-- 3.0.0 @tehn
+-- l.llllllll.co/mlr
 
+include("lib/data")
 include("lib/ui")
 include("lib/grid")
 
-state = {
-  page = "setup"
-}
 
-function page(x)
+function set_page(x)
   state.page = x
+  ui.dirty = true
+  g.dirty = true
+end
+
+function set_window(x)
+  state.window = x
   ui.dirty = true
   g.dirty = true
 end
