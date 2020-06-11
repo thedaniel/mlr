@@ -2,10 +2,13 @@
 -- 3.0.0 @tehn
 -- l.llllllll.co/mlr
 
+p = params
+s = softcut
+
 include("lib/data")
 include("lib/ui")
 include("lib/grid")
-
+include("lib/sc")
 
 function set_page(x)
   state.page = x
@@ -27,4 +30,5 @@ num3 = 1
 function init()
   ui.init()
   g.init()
+  sc.init()
 end

@@ -13,10 +13,11 @@ for i=1,4 do
     play = false,
     rec = false,
     level = 1.0,
-    mute = 1
+    pan = 0,
+    mute = 1,
+    track = 1
   }
 end
-
 
 track = {}
 
@@ -48,8 +49,8 @@ clip = {}
 
 for i=1,16 do
   clip[i] = {
-    pos_start = 0,
-    pos_end = 2,
+    pos_start = (i-1)*2,
+    pos_end = i*2,
     len = 2,
     ch = 1,
     name = i

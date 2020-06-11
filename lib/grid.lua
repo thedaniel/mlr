@@ -115,8 +115,23 @@ g.key.cut = function(x,y,z) end
 
 -------- CLIP
 
-g.redraw.clip = function() end
-g.key.clip = function(x,y,z) end
+g.redraw.clip = function()
+  local w = (state.window-1)*6
+  for i=1,6 do
+    local l = tr==i and 15 or 5
+    gr:led(track[i+w].clip,i+2,l)
+  end
+end
+
+g.key.clip = function(x,y,z)
+  local w = (state.window-1)*6
+  if z==1 then
+    tr = y-2+w
+    track[tr].clip = x
+    g.dirty = true
+    ui.dirty = true
+  end
+end
 
 
 -------- PARAM
