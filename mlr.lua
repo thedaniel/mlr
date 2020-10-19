@@ -402,6 +402,11 @@ init = function()
     softcut.loop(i,1)
     softcut.position(i, clip[track[i].clip].s)
 
+    softcut.post_filter_dry(i,0.0)
+    softcut.post_filter_lp(i,1.0)
+    softcut.post_filter_fc(i,12000)
+    softcut.post_filter_rq(1,10)
+
     params:add_control(i.."vol", i.."vol", UP1)
     params:set_action(i.."vol", function(x) softcut.level(i,x) end)
     params:add_control(i.."pan", i.."pan", cs_PAN)
@@ -430,6 +435,9 @@ init = function()
     params:set_action(i.."file",
       --function(n) print("FILESELECT > "..i.." "..n) end)
       function(n) fileselect_callback(n,i) end)
+
+    params:add_control(i.."filter cutoff", i.."filter cutoff", controlspec.new(10,12000,'exp',1,12000,"Hz"))
+    params:set_action(i.."filter cutoff", function(x) softcut.post_filter_fc(i,x) end)
 
     update_rate(i)
     set_clip(i,i)
